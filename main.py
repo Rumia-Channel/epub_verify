@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import List, Set
 from urllib.parse import unquote
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 # Logging setup
 logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -55,7 +56,7 @@ class EpubValidator:
         try:
             with zf.open(html_filename) as f:
                 # Use lxml for speed and XML support
-                soup = BeautifulSoup(f, 'lxml')
+                soup = BeautifulSoup(f, 'xml')
 
             base_dir = posixpath.dirname(html_filename)
 
@@ -115,7 +116,7 @@ class EpubSorter:
 
         logger.info(f"Found {len(files)} EPUB files. Starting validation...\n")
 
-        for file_path in files:
+        for file_path in tqdm(files, desc="Validating", unit="epub"):
             validator = EpubValidator(file_path)
             is_valid = validator.validate()
 
